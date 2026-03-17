@@ -117,16 +117,6 @@ class Question(BaseModel):
     prompt: str
     language: str = "Tamil"
 
-class LoginRequest(BaseModel):
-    name: str
-    password: str
-
-class ChatMessage(BaseModel):
-    user_name: str
-    chat_id: str
-    message: str
-    sender: str
-
 # -----------------------------
 # AI Endpoint
 # -----------------------------
@@ -145,76 +135,6 @@ def ask_ai(question: Question):
         return {"answer": data["choices"][0]["message"]["content"]}
     except Exception as e:
         return {"answer": f"❌ Connection Error: {str(e)}"}
-
-# -----------------------------
-# Auth Endpoints
-# -----------------------------
-@app.post("/register")
-async def register(
-    request: Request,
-    name: str = Form(...),
-    email: EmailStr = Form(...),
-    password: str = Form(...),
-    image: UploadFile = File(...)
-):
-    if await users_collection.find_one({"name": name}):
-        raise HTTPException(status_code=400, detail="Username already taken")
-    if await users_collection.find_one({"email": email}):
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    # Generate filename and save locally
-    filename = f"{name}_{image.filename}"
-    file_path = os.path.join(UPLOADS_DIR, filename)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(image.file, buffer)
-    
-    # Store dynamic URL
-    base_url = str(request.base_url).rstrip("/")
-    image_url = f"{base_url}/static/uploads/{filename}"
-
-    user_data = {
-        "name": name,
-        "email": email,
-        "password": get_password_hash(password),
-        "image_url": image_url
-    }
-    await users_collection.insert_one(user_data)
-    return {"message": "Registration successful", "user": name}
-
-@app.post("/login")
-async def login(login_data: LoginRequest):
-    user = await users_collection.find_one({"name": login_data.name})
-    if not user or not verify_password(login_data.password, user["password"]):
-        raise HTTPException(status_code=400, detail="Invalid username or password")
-    
-    return {"message": "Login successful", "user": user["name"], "image_url": user["image_url"]}
-
-# -----------------------------
-# Chat Endpoints
-# -----------------------------
-@app.post("/save_chat")
-async def save_chat(chat_data: ChatMessage):
-    await db["chats"].insert_one(chat_data.dict())
-    return {"message": "Chat saved"}
-
-@app.get("/history/{user_name}")
-async def get_history(user_name: str):
-    pipeline = [
-        {"$match": {"user_name": user_name}},
-        {"$group": {"_id": "$chat_id", "last_message": {"$first": "$message"}, "timestamp": {"$first": "$_id"}}},
-        {"$sort": {"timestamp": -1}}
-    ]
-    cursor = db["chats"].aggregate(pipeline)
-    history = await cursor.to_list(length=100)
-    for item in history: item["timestamp"] = str(item["timestamp"])
-    return history
-
-@app.get("/chat/{chat_id}")
-async def get_chat(chat_id: str):
-    cursor = db["chats"].find({"chat_id": chat_id}).sort("_id", 1)
-    messages = await cursor.to_list(length=100)
-    for msg in messages: msg["_id"] = str(msg["_id"])
-    return messages
 
 @app.get("/")
 def read_root(): return {"message": "Aether AI Unified Server Running"}

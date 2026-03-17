@@ -133,8 +133,8 @@
                 </button>
             </div>
             
-            <div id="historyList" class="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-1">
-                <div class="p-4 text-center text-xs text-slate-500">Loading history...</div>
+            <div id="historyList" class="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-1 text-center text-xs text-slate-500">
+                Anonymous Session
             </div>
 
             <div class="p-4 border-t border-white/5">
@@ -249,68 +249,15 @@
             if (window.innerWidth < 768) toggleSidebar();
         }
 
-        async function loadHistory() {
-            const user = localStorage.getItem('user');
-            if (!user) return;
-            try {
-                const response = await fetch(`${DATA_API_URL}/history/${user}`);
-                if (response.ok) {
-                    const history = await response.json();
-                    const historyList = document.getElementById("historyList");
-                    historyList.innerHTML = "";
-                    if (history.length === 0) {
-                        historyList.innerHTML = '<div class="p-4 text-center text-xs text-slate-500">No recent chats</div>';
-                        return;
-                    }
-                    history.forEach(item => {
-                        const div = document.createElement("div");
-                        div.className = `history-item p-3 rounded-lg cursor-pointer transition-all flex flex-col gap-1 ${currentChatId === item._id ? 'active' : ''}`;
-                        div.onclick = () => loadChat(item._id);
-                        div.innerHTML = `
-                            <span class="text-sm font-bold truncate text-slate-300">${item.last_message}</span>
-                            <span class="text-[10px] text-slate-500">${new Date(item.timestamp).toLocaleDateString()}</span>
-                        `;
-                        historyList.appendChild(div);
-                    });
-                }
-            } catch (err) { console.error(err); }
-        }
-
-        async function loadChat(chatId) {
-            if (window.speechSynthesis) window.speechSynthesis.cancel();
-            currentChatId = chatId;
-            document.getElementById("chatBox").innerHTML = "";
-            try {
-                const response = await fetch(`${DATA_API_URL}/chat/${chatId}`);
-                if (response.ok) {
-                    const messages = await response.json();
-                    messages.forEach(msg => { addMessage(msg.message, msg.sender, false); });
-                }
-                loadHistory();
-                if (window.innerWidth < 768) toggleSidebar();
-            } catch (err) { console.error(err); }
-        }
-
         async function saveMessage(text, sender) {
-            const user = localStorage.getItem('user');
-            if (!user) return;
-            try {
-                await fetch(`${DATA_API_URL}/save_chat`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_name: user, chat_id: currentChatId, message: text, sender: sender })
-                });
-                loadHistory();
-            } catch (err) { console.error(err); }
+            // Persistence removed for anonymous access
+            return;
         }
 
         function cleanTextForSpeech(text) {
             return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/`/g, '').replace(/#+/g, '').replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1').replace(/\n/g, ' ');
         }
 
-        const currentUser = localStorage.getItem('user');
-        const currentUserImage = localStorage.getItem('image_url');
-        if (!currentUser) { window.location.href = 'login.html'; }
 
         function addMessage(text, sender, shouldSave = true, shouldSpeak = true) {
             if (shouldSave) saveMessage(text, sender);
@@ -321,14 +268,7 @@
             const avatar = document.createElement("div");
             avatar.className = `size-8 rounded-lg flex items-center justify-center text-white shadow-sm shrink-0 ${sender === "user" ? "bg-slate-700" : "bg-gradient-to-br from-primary to-emerald-400"} overflow-hidden`;
 
-            if (sender === "user" && currentUserImage) {
-                const img = document.createElement("img");
-                img.src = currentUserImage;
-                img.className = "w-full h-full object-cover";
-                avatar.appendChild(img);
-            } else {
                 avatar.innerHTML = `<span class="material-symbols-outlined text-sm">${sender === "user" ? "person" : "smart_toy"}</span>`;
-            }
 
             const msgContent = document.createElement("div");
             msgContent.className = `flex flex-col gap-1 ${sender === "user" ? "items-end" : "items-start"}`;
@@ -418,13 +358,11 @@
         }
 
         window.addEventListener('load', () => {
-            loadHistory();
             if (document.getElementById("chatBox").children.length === 0) {
                 const sessionGreeted = sessionStorage.getItem('sessionGreeted');
                 if (!sessionGreeted) {
-                    const user = localStorage.getItem('user') || 'Friend';
                     setTimeout(() => { 
-                        addMessage(`${getGreeting()} ${user}, I am Aether AI, your friendly Study Assistant. I am here to help you succeed! ✨`, "bot", false); 
+                        addMessage(`${getGreeting()} Friend, I am Aether AI, your friendly Study Assistant. I am here to help you succeed! ✨`, "bot", false); 
                         sessionStorage.setItem('sessionGreeted', 'true');
                     }, 500);
                 }
