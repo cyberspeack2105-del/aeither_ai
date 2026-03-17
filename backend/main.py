@@ -32,13 +32,22 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # -----------------------------
 app = FastAPI(title="Aether AI Platform")
 
-# CORS
+# CORS - Production Ready
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # In production, you can replace with your Vercel URL
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/test-db")
+async def test_db():
+    try:
+        await client.admin.command('ping')
+        return {"status": "Database Connected Successfully!"}
+    except Exception as e:
+        return {"status": "Database Connection Failed", "error": str(e)}
 
 # Static Files Setup
 # Ensure paths are correct for both local and Render
