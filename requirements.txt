@@ -7,3 +7,5 @@ pydantic
 pymongo
 dnspython
 passlib[bcrypt]
+python-multipart
+email-validator
