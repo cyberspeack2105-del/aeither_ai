@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Root Nexus - Aether AI Hub</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981", // Emerald/Green matching the logo
+                        "background-dark": "#0a0c10",
+                        "surface-dark": "#161b22",
+                        "accent": "#34d399",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': 'linear-gradient(to right, rgba(16, 185, 129, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 1px, transparent 1px)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0c10;
+            background-image: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.15), transparent 80%);
+        }
+
+        .glass {
+            background: rgba(22, 27, 34, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hero-text {
+            background: linear-gradient(135deg, #fff 0%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .float-anim {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+
+<body class="text-slate-200 font-display min-h-screen relative overflow-x-hidden">
+    <!-- Grid Background -->
+    <div class="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] pointer-events-none opacity-20"></div>
+
+    <!-- Header -->
+    <nav class="sticky top-0 z-50 w-full border-b border-white/5 bg-background-dark/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <img src="logo.png" alt="Root Nexus Logo" class="h-8 sm:h-10 w-auto">
+                <span class="text-xl sm:text-2xl font-bold tracking-tighter text-white">Root<span
+                        class="text-primary">Nexus</span></span>
+            </div>
+            <div class="flex items-center gap-3 sm:gap-6">
+                <a href="index.html"
+                    class="text-xs sm:text-sm font-medium hover:text-primary transition-colors">Home</a>
+                <a href="chat.html"
+                    class="px-4 sm:px-5 py-1.5 sm:py-2 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs sm:text-sm font-bold hover:bg-primary hover:text-white transition-all">Launch
+                    AI</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-12 sm:pt-20 pb-20 sm:pb-32 px-6">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 sm:gap-16 items-center">
+            <div class="relative z-10 text-center lg:text-left">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                    <span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                    <span class="text-[10px] sm:text-xs font-bold text-primary tracking-widest uppercase">The Future of
+                        Learning</span>
+                </div>
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-bold leading-[1.1] mb-6 sm:mb-8 hero-text">
+                    Connecting You to Smart Digital Solutions.
+                </h1>
+                <p class="text-lg sm:text-xl text-slate-400 leading-relaxed mb-8 sm:10 max-w-xl mx-auto lg:mx-0">
+                    Root Nexus is a modern AI-powered learning and development platform designed to connect users with
+                    smart digital solutions in education, technology, and real-world problem solving.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="chat.html"
+                        class="px-8 py-4 bg-primary text-white font-bold rounded-2xl hover:scale-105 transition-all shadow-lg shadow-primary/20">Get
+                        Started</a>
+                    <a href="#about"
+                        class="px-8 py-4 glass text-white font-bold rounded-2xl hover:bg-white/5 transition-all">Learn
+                        More</a>
+                </div>
+            </div>
+            <div class="relative flex justify-center lg:justify-end">
+                <div
+                    class="relative w-full max-w-[500px] aspect-square rounded-[3rem] overflow-hidden glass p-8 float-anim">
+                    <img src="logo.png" alt="Root Nexus Showcase"
+                        class="w-full h-full object-contain filter drop-shadow(0 0 20px rgba(16,185,129,0.3))">
+                </div>
+                <!-- Decorative Elements -->
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-accent/20 rounded-full blur-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Section -->
+    <section id="about" class="py-20 px-6 bg-white/2">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="p-8 glass rounded-[2.5rem] feature-card transition-all">
+                    <div class="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6">
+                        <span class="material-symbols-outlined text-3xl">psychology</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Intelligent Assistance</h3>
+                    <p class="text-slate-400 leading-relaxed">
+                        Personalized guidance through AI assistants that simplify complex concepts and support your
+                        learning journey.
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="p-8 glass rounded-[2.5rem] feature-card transition-all">
+                    <div class="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6">
+                        <span class="material-symbols-outlined text-3xl">developer_mode</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Skill Development</h3>
+                    <p class="text-slate-400 leading-relaxed">
+                        Interactive modules and web-based tools designed to empower users to build real-world projects
+                        and innovate.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="p-8 glass rounded-[2.5rem] feature-card transition-all">
+                    <div class="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6">
+                        <span class="material-symbols-outlined text-3xl">rocket_launch</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Scalable Future</h3>
+                    <p class="text-slate-400 leading-relaxed">
+                        Built with cutting-edge frameworks like FastAPI and modern frontend technologies for a seamless,
+                        scalable experience.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-20 p-12 glass rounded-[3rem] text-center max-w-4xl mx-auto border-primary/10">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">Developed by <span class="text-primary italic">Root
+                        Nexus</span></h2>
+                <p class="text-lg text-slate-400 leading-relaxed italic">
+                    "Root Nexus is a central hub for next-generation digital learning and intelligent assistance,
+                    ensuring an efficient user experience for all."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex items-center gap-3 opacity-70">
+                <img src="logo.png" alt="Root Nexus Logo" class="h-6 w-auto grayscale">
+                <span class="text-sm font-medium">© 2026 Root Nexus. All rights reserved.</span>
+            </div>
+            <div class="flex gap-8 text-sm text-slate-500">
+                <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
+                <a href="mailto:contact@rootnexus.ai" class="hover:text-primary transition-colors">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+    <!-- Floating Company Logo -->
+    <a href="https://rootnexusn.netlify.app" target="_blank"
+        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] group flex items-center gap-2 sm:gap-3 bg-surface-dark/80 backdrop-blur-md p-1.5 sm:p-2 pr-4 sm:pr-5 rounded-full border border-white/10 hover:border-primary/50 transition-all hover:scale-105 shadow-2xl">
+        <div
+            class="size-8 sm:size-10 rounded-full bg-primary/10 flex items-center justify-center p-1.5 sm:p-2 border border-primary/20">
+            <img src="logo.png" alt="Root Nexus" class="w-full h-full object-contain">
+        </div>
+        <div class="flex flex-col">
+            <span
+                class="text-[8px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none">Visit
+                Website</span>
+            <span class="text-xs sm:text-sm font-black text-white leading-tight">Root <span
+                    class="text-primary">Nexus</span></span>
+        </div>
+        <div
+            class="absolute -inset-0.5 bg-primary/20 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-500">
+        </div>
+    </a>
+</body>
+
+</html>

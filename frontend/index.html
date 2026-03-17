@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <title>Aether AI - Second Brain</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981",
+                        "background-dark": "#0a0c10",
+                        "surface-dark": "#161b22",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': 'linear-gradient(to right, rgba(16, 185, 129, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 1px, transparent 1px)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0c10;
+            background-image: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.15), transparent 80%);
+        }
+
+        .glass {
+            background: rgba(22, 27, 34, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+
+<body class="text-slate-200 font-display min-h-screen relative overflow-x-hidden">
+    <!-- Grid Background -->
+    <div class="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] pointer-events-none opacity-20"></div>
+
+    <div class="relative flex h-auto min-h-screen w-full flex-col">
+        <nav class="sticky top-0 z-50 w-full border-b border-white/5 bg-background-dark/80 backdrop-blur-md">
+            <div class="flex justify-center w-full px-4 sm:px-10 py-3">
+                <div class="flex w-full max-w-[1280px] items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <img src="logo.png" alt="Logo" class="h-10 w-auto object-contain" />
+                        <span class="text-xl font-bold tracking-tight text-white">Aether <span
+                                class="text-primary">AI</span></span>
+                    </div>
+
+                    <div id="authActions" class="hidden md:flex items-center gap-4">
+                        <a href="login.html"
+                            class="text-sm font-medium text-slate-400 hover:text-primary transition-colors">Login</a>
+                        <a href="register.html"
+                            class="px-5 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all hover:scale-105">Register</a>
+                    </div>
+
+                    <div id="userProfile" class="hidden items-center gap-3">
+                        <div class="text-right hidden sm:block">
+                            <p id="userNameDisplay" class="text-sm font-bold text-white leading-none"></p>
+                            <p class="text-xs text-slate-500">Student</p>
+                        </div>
+                        <div class="size-10 rounded-full bg-white/10 overflow-hidden border border-white/10">
+                            <img id="userImageDisplay" src="" alt="User" class="w-full h-full object-cover hidden" />
+                            <div id="userPlaceholder"
+                                class="w-full h-full flex items-center justify-center text-slate-400">
+                                <span class="material-symbols-outlined">person</span>
+                            </div>
+                        </div>
+                        <button onclick="logout()"
+                            class="size-10 flex items-center justify-center rounded-full bg-white/5 text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                            title="Logout">
+                            <span class="material-symbols-outlined text-xl">logout</span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-4 md:hidden">
+                        <button class="text-white">
+                            <span class="material-symbols-outlined">menu</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <section class="relative flex flex-col justify-center py-10 md:py-20 lg:py-28 px-4 sm:px-10">
+            <div class="mx-auto w-full max-w-[1280px] flex flex-col lg:flex-row gap-10 lg:gap-12 items-center">
+                <div class="flex flex-col gap-6 sm:gap-8 flex-1 text-center lg:text-left relative z-10">
+                    <div class="flex flex-col gap-4">
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 w-fit mx-auto lg:mx-0 border border-primary/20">
+                            <span class="flex size-2 rounded-full bg-primary animate-pulse"></span>
+                            <span class="text-[10px] sm:text-xs font-bold text-primary uppercase tracking-wide">Version
+                                2.0 Live</span>
+                        </div>
+                        <h1
+                            class="text-4xl sm:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight text-white animate-fade-in-up delay-100">
+                            Your Second Brain, <br class="hidden sm:block" />
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-300">Supercharged
+                                by AI.</span>
+                        </h1>
+                        <h2
+                            class="text-base sm:text-xl font-normal leading-relaxed text-slate-400 max-w-2xl mx-auto lg:mx-0 animate-fade-in-up delay-200">
+                            Your dedicated AI companion for academic success. Get instant answers, organize your
+                            schedule, and ace your exams with a personalized study assistant.
+                        </h2>
+                    </div>
+                    <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                        <a href="#" id="launchBtn" onclick="launchAssistant(event)"
+                            class="flex items-center justify-center rounded-2xl h-14 px-10 bg-primary hover:bg-primary/90 transition-all text-white text-base font-bold shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 animate-fade-in-up delay-300">
+                            Launch Assistant
+                        </a>
+                        <a href="root.html"
+                            class="flex items-center justify-center rounded-2xl h-14 px-10 glass hover:bg-white/5 transition-all text-white text-base font-bold animate-fade-in-up delay-300">
+                            About Root Nexus
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full lg:w-auto relative group animate-float">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-primary to-emerald-400 rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000">
+                    </div>
+                    <div
+                        class="relative w-full aspect-square md:aspect-[4/3] glass rounded-[2.5rem] overflow-hidden flex items-center justify-center p-8">
+                        <img src="logo.png" alt="AI Visualization"
+                            class="w-full h-full object-contain filter drop-shadow(0 0 20px rgba(16,185,129,0.2))">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="border-t border-white/5 pt-16 pb-8 px-4 sm:px-10 bg-black/20">
+            <div class="mx-auto w-full max-w-[1280px] flex flex-col gap-12">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+                    <div class="col-span-2 md:col-span-1 flex flex-col gap-4">
+                        <div class="flex items-center gap-2">
+                            <img src="logo.png" alt="Logo" class="h-6 w-auto opacity-80">
+                            <h3 class="font-bold text-lg text-white">Aether AI</h3>
+                        </div>
+                        <p class="text-slate-500 text-sm leading-relaxed">
+                            Empowering students to create, solve, and innovate faster than ever before.
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <h4 class="text-white font-bold">Product</h4>
+                        <div class="flex flex-col gap-2">
+                            <a class="text-slate-500 hover:text-primary text-sm transition-colors" href="#">Features</a>
+                            <a class="text-slate-500 hover:text-primary text-sm transition-colors"
+                                href="root.html">About Root Nexus</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-t border-white/5 pt-8">
+                    <p class="text-slate-500 text-sm">
+                        © 2026 AI Assistant. Developed by <a href="root.html"
+                            class="text-primary hover:underline font-bold">Root Nexus</a>.
+                    </p>
+                    <div class="flex gap-4">
+                        <span class="text-xs text-slate-700 tracking-widest uppercase font-bold">Next-Gen Learning
+                            Hub</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Floating Company Logo -->
+    <a href="https://rootnexusn.netlify.app" target="_blank"
+        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] group flex items-center gap-2 sm:gap-3 bg-surface-dark/80 backdrop-blur-md p-1.5 sm:p-2 pr-4 sm:pr-5 rounded-full border border-white/10 hover:border-primary/50 transition-all hover:scale-105 shadow-2xl">
+        <div
+            class="size-8 sm:size-10 rounded-full bg-primary/10 flex items-center justify-center p-1.5 sm:p-2 border border-primary/20">
+            <img src="logo.png" alt="Root Nexus" class="w-full h-full object-contain">
+        </div>
+        <div class="flex flex-col">
+            <span
+                class="text-[8px] sm:text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-none">Visit
+                Website</span>
+            <span class="text-xs sm:text-sm font-black text-white leading-tight">Root <span
+                    class="text-primary">Nexus</span></span>
+        </div>
+        <div
+            class="absolute -inset-0.5 bg-primary/20 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-500">
+        </div>
+    </a>
+
+    <script>
+        // Check Auth State
+        window.addEventListener('load', () => {
+            const user = localStorage.getItem('user');
+            const imageUrl = localStorage.getItem('image_url');
+
+            const authActions = document.getElementById('authActions');
+            const userProfile = document.getElementById('userProfile');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userImageDisplay = document.getElementById('userImageDisplay');
+            const userPlaceholder = document.getElementById('userPlaceholder');
+
+            if (user) {
+                if (authActions) authActions.style.display = 'none';
+                if (userProfile) userProfile.style.display = 'flex';
+                if (userNameDisplay) userNameDisplay.innerText = user;
+                if (imageUrl && userImageDisplay) {
+                    userImageDisplay.src = imageUrl;
+                    userImageDisplay.classList.remove('hidden');
+                    if (userPlaceholder) userPlaceholder.classList.add('hidden');
+                }
+            }
+
+            // Welcome Voice Introduction
+            const sessionGreetedLanding = sessionStorage.getItem('greetedLanding');
+            if (!sessionGreetedLanding) {
+                const name = user || "friend";
+                const message = `Welcome to Aether AI, ${name}. I am your advanced study assistant, powered by Root Nexus. I am here to help you learn, solve problems, and achieve academic excellence. Let's start your learning journey today!`;
+
+                const triggerGreet = () => {
+                    if (sessionStorage.getItem('greetedLanding')) return;
+                    speakText(message);
+                    sessionStorage.setItem('greetedLanding', 'true');
+                };
+
+                // Try auto-play after load
+                setTimeout(triggerGreet, 1000);
+                // Fallback: Trigger on first user interaction
+                document.addEventListener('click', triggerGreet, { once: true });
+                document.addEventListener('touchstart', triggerGreet, { once: true });
+            }
+        });
+
+        function speakText(text) {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+
+            const speak = () => {
+                const voices = window.speechSynthesis.getVoices();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.pitch = 1.2;
+                utterance.rate = 1.05;
+
+                let selectedVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Zira") || v.name.includes("Samantha") || v.name.includes("Female"));
+                if (selectedVoice) utterance.voice = selectedVoice;
+
+                window.speechSynthesis.speak(utterance);
+            };
+
+            if (window.speechSynthesis.getVoices().length === 0) {
+                window.speechSynthesis.onvoiceschanged = speak;
+            } else {
+                speak();
+            }
+        }
+
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('image_url');
+                window.location.reload();
+            }
+        }
+
+        function launchAssistant(e) {
+            e.preventDefault();
+            const user = localStorage.getItem('user');
+            if (user) {
+                window.location.href = 'chat.html';
+            } else {
+                window.location.href = 'register.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

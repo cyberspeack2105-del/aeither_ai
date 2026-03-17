@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AI Assistant - Aether AI</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981",
+                        "background-dark": "#0a0c10",
+                        "surface-dark": "#161b22",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': 'linear-gradient(to right, rgba(16, 185, 129, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 1px, transparent 1px)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0c10;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+        }
+
+        .pulse-ring {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse-ring 1.5s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+
+        @keyframes pulse-ring {
+            to {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+            z-index: 60;
+        }
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+                position: absolute;
+                height: 100%;
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .history-item:hover {
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+        .history-item.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+        }
+
+        .glass {
+            background: rgba(22, 27, 34, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-dark text-slate-200 font-display transition-colors duration-300 h-screen flex flex-col overflow-hidden relative">
+    
+    <!-- Grid Background -->
+    <div class="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] pointer-events-none opacity-10"></div>
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 w-full border-b border-white/5 bg-background-dark/80 backdrop-blur-md">
+        <div class="flex justify-center w-full px-4 sm:px-10 py-3">
+            <div class="flex w-full max-w-[1280px] items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="Logo" class="h-8 w-auto object-contain" />
+                    <span class="text-lg font-bold text-white">Aether <span class="text-primary font-black">AI</span></span>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="toggleSidebar()" class="md:hidden mr-4 text-slate-400">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <a href="index.html" class="text-sm font-medium hover:text-primary transition-colors text-slate-400 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="flex-1 flex overflow-hidden relative z-10">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-72 bg-surface-dark border-r border-white/5 flex flex-col shrink-0 overflow-hidden">
+            <div class="p-4 border-b border-white/5">
+                <button onclick="startNewChat()" class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-xl font-bold transition-all group">
+                    <span class="material-symbols-outlined group-hover:rotate-90 transition-transform">add</span>
+                    New Chat
+                </button>
+            </div>
+            
+            <div id="historyList" class="flex-1 overflow-y-auto custom-scrollbar p-2 flex flex-col gap-1">
+                <div class="p-4 text-center text-xs text-slate-500">Loading history...</div>
+            </div>
+
+            <div class="p-4 border-t border-white/5">
+                <a href="root.html" class="flex items-center gap-3 group">
+                    <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                        <span class="material-symbols-outlined text-base">info</span>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-slate-500">Powered by</span>
+                        <span class="text-sm font-bold text-slate-300 group-hover:text-primary">Root Nexus</span>
+                    </div>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="flex-1 p-2 sm:p-4 md:p-6 flex flex-col gap-4 sm:gap-6 overflow-hidden">
+
+        <!-- Chat Container -->
+        <div class="flex-1 flex flex-col glass rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden relative shadow-2xl">
+
+            <!-- Chat Header -->
+            <div class="bg-primary/5 p-3 sm:p-4 flex items-center justify-between border-b border-white/5">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="size-8 sm:size-10 rounded-full bg-gradient-to-br from-primary to-emerald-400 flex items-center justify-center text-white shadow-lg">
+                        <span class="material-symbols-outlined text-sm sm:text-base">smart_toy</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm sm:text-base text-white leading-tight">Aether Assistant</h3>
+                        <div class="flex items-center gap-1.5">
+                            <span class="relative flex size-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full size-2 bg-emerald-400"></span>
+                            </span>
+                            <span class="text-xs font-medium text-slate-500">Online & Ready</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Controls -->
+                <div class="flex items-center gap-2">
+                    <button id="muteBtn" onclick="toggleMute()" class="size-9 flex items-center justify-center rounded-lg bg-white/5 text-slate-400 hover:text-primary transition-all" title="Toggle Mute">
+                        <span class="material-symbols-outlined text-xl">volume_up</span>
+                    </button>
+                    <select id="langSelect" class="bg-background-dark border border-white/5 text-slate-300 text-[10px] sm:text-xs rounded-lg py-2 pl-2 pr-6 sm:pl-3 sm:pr-8 focus:ring-primary focus:border-primary outline-none cursor-pointer">
+                        <option value="en-US">English</option>
+                        <option value="ta-IN">தமிழ்</option>
+                        <option value="ml-IN">മലയാളം</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chatBox" class="flex-1 p-6 overflow-y-auto custom-scrollbar flex flex-col gap-6 bg-black/20">
+                <!-- Welcome Message dynamically added -->
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-6 border-t border-white/5">
+                <div class="relative flex items-center gap-3 max-w-[900px] mx-auto">
+                    <button id="micBtn" onclick="toggleVoice()" class="size-12 rounded-2xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white/5 transition-all">
+                        <span class="material-symbols-outlined">mic</span>
+                    </button>
+
+                    <div class="relative flex-1">
+                        <input id="userInput" type="text" class="w-full pl-6 pr-14 py-4 bg-white/5 border border-white/5 rounded-2xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none" placeholder="Ask Aether anything..." />
+
+                        <button onclick="sendMessage()" class="absolute right-2 top-1/2 -translate-y-1/2 size-10 bg-primary text-white rounded-xl shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl">arrow_upward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/ask";
+        const DATA_API_URL = "http://127.0.0.1:8080";
+        let currentChatId = Date.now().toString();
+        let isMuted = localStorage.getItem('isMuted') === 'true';
+
+        // Update UI state for mute
+        if(isMuted) {
+            document.getElementById('muteBtn').innerHTML = '<span class="material-symbols-outlined text-xl">volume_off</span>';
+            document.getElementById('muteBtn').classList.add('text-red-400');
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            localStorage.setItem('isMuted', isMuted);
+            const btn = document.getElementById('muteBtn');
+            if (isMuted) {
+                btn.innerHTML = '<span class="material-symbols-outlined text-xl">volume_off</span>';
+                btn.classList.add('text-red-400', 'bg-red-500/10');
+                if (window.speechSynthesis) window.speechSynthesis.cancel();
+            } else {
+                btn.innerHTML = '<span class="material-symbols-outlined text-xl">volume_up</span>';
+                btn.classList.remove('text-red-400', 'bg-red-500/10');
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function startNewChat() {
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            currentChatId = Date.now().toString();
+            document.getElementById("chatBox").innerHTML = "";
+            // No automatic greeting on New Chat as per request
+            if (window.innerWidth < 768) toggleSidebar();
+        }
+
+        async function loadHistory() {
+            const user = localStorage.getItem('user');
+            if (!user) return;
+            try {
+                const response = await fetch(`${DATA_API_URL}/history/${user}`);
+                if (response.ok) {
+                    const history = await response.json();
+                    const historyList = document.getElementById("historyList");
+                    historyList.innerHTML = "";
+                    if (history.length === 0) {
+                        historyList.innerHTML = '<div class="p-4 text-center text-xs text-slate-500">No recent chats</div>';
+                        return;
+                    }
+                    history.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = `history-item p-3 rounded-lg cursor-pointer transition-all flex flex-col gap-1 ${currentChatId === item._id ? 'active' : ''}`;
+                        div.onclick = () => loadChat(item._id);
+                        div.innerHTML = `
+                            <span class="text-sm font-bold truncate text-slate-300">${item.last_message}</span>
+                            <span class="text-[10px] text-slate-500">${new Date(item.timestamp).toLocaleDateString()}</span>
+                        `;
+                        historyList.appendChild(div);
+                    });
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadChat(chatId) {
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            currentChatId = chatId;
+            document.getElementById("chatBox").innerHTML = "";
+            try {
+                const response = await fetch(`${DATA_API_URL}/chat/${chatId}`);
+                if (response.ok) {
+                    const messages = await response.json();
+                    messages.forEach(msg => { addMessage(msg.message, msg.sender, false); });
+                }
+                loadHistory();
+                if (window.innerWidth < 768) toggleSidebar();
+            } catch (err) { console.error(err); }
+        }
+
+        async function saveMessage(text, sender) {
+            const user = localStorage.getItem('user');
+            if (!user) return;
+            try {
+                await fetch(`${DATA_API_URL}/save_chat`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_name: user, chat_id: currentChatId, message: text, sender: sender })
+                });
+                loadHistory();
+            } catch (err) { console.error(err); }
+        }
+
+        function cleanTextForSpeech(text) {
+            return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/`/g, '').replace(/#+/g, '').replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1').replace(/\n/g, ' ');
+        }
+
+        const currentUser = localStorage.getItem('user');
+        const currentUserImage = localStorage.getItem('image_url');
+        if (!currentUser) { window.location.href = 'login.html'; }
+
+        function addMessage(text, sender, shouldSave = true, shouldSpeak = true) {
+            if (shouldSave) saveMessage(text, sender);
+            const chatBox = document.getElementById("chatBox");
+            const div = document.createElement("div");
+            div.className = `flex gap-3 max-w-[90%] ${sender === "user" ? "ml-auto flex-row-reverse" : ""} animate-slide-in-up`;
+
+            const avatar = document.createElement("div");
+            avatar.className = `size-8 rounded-lg flex items-center justify-center text-white shadow-sm shrink-0 ${sender === "user" ? "bg-slate-700" : "bg-gradient-to-br from-primary to-emerald-400"} overflow-hidden`;
+
+            if (sender === "user" && currentUserImage) {
+                const img = document.createElement("img");
+                img.src = currentUserImage;
+                img.className = "w-full h-full object-cover";
+                avatar.appendChild(img);
+            } else {
+                avatar.innerHTML = `<span class="material-symbols-outlined text-sm">${sender === "user" ? "person" : "smart_toy"}</span>`;
+            }
+
+            const msgContent = document.createElement("div");
+            msgContent.className = `flex flex-col gap-1 ${sender === "user" ? "items-end" : "items-start"}`;
+
+            const bubble = document.createElement("div");
+            if (sender === "user") {
+                bubble.className = "bg-primary text-white p-4 rounded-2xl rounded-tr-none shadow-lg text-sm leading-relaxed";
+                bubble.innerText = text;
+            } else {
+                bubble.className = "bg-white/5 border border-white/5 p-4 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-200 leading-relaxed prose prose-sm prose-invert max-w-none";
+                bubble.innerHTML = typeof marked !== 'undefined' ? marked.parse(text) : text;
+            }
+
+            msgContent.appendChild(bubble);
+            div.appendChild(avatar);
+            div.appendChild(msgContent);
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            if (sender === "bot" && shouldSpeak && !isMuted) { speakText(cleanTextForSpeech(text)); }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById("userInput");
+            const message = input.value.trim();
+            const langSelect = document.getElementById("langSelect");
+            if (message === "") return;
+            addMessage(message, "user");
+            input.value = "";
+            const langMap = { "ta-IN": "Tamil", "ml-IN": "Malayalam", "en-US": "English" };
+            const selectedLangName = langMap[langSelect.value] || "English";
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: message, language: selectedLangName })
+            })
+            .then(async r => {
+                const data = await r.json();
+                if (!r.ok) throw new Error(data.detail);
+                addMessage(data.answer, "bot", true, true);
+            })
+            .catch(e => addMessage("❌ " + e.message, "bot", false, false));
+        }
+
+        document.getElementById("userInput").addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
+        let recognition = null;
+        let isListening = false;
+        const micBtn = document.getElementById("micBtn");
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.onstart = () => { isListening = true; micBtn.classList.add("text-primary", "bg-primary/10", "pulse-ring"); };
+            recognition.onend = () => { isListening = false; micBtn.classList.remove("text-primary", "bg-primary/10", "pulse-ring"); };
+            recognition.onresult = (e) => { document.getElementById("userInput").value = e.results[0][0].transcript; sendMessage(); };
+        }
+
+        function toggleVoice() {
+            if (!recognition) return;
+            if (isListening) recognition.stop();
+            else { recognition.lang = langSelect.value; recognition.start(); }
+        }
+
+        function speakText(text) {
+            if (!window.speechSynthesis) return;
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) { window.speechSynthesis.onvoiceschanged = () => playSpeech(text, window.speechSynthesis.getVoices()); }
+            else { playSpeech(text, voices); }
+        }
+
+        function playSpeech(text, voices) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = langSelect.value;
+            utterance.pitch = 1.2; 
+            utterance.rate = 1.05;
+            
+            let selectedVoice = voices.find(v => v.lang === langSelect.value);
+            if (!selectedVoice || langSelect.value.startsWith('en')) {
+                selectedVoice = voices.find(v => v.name.includes("Google US English") || v.name.includes("Zira") || v.name.includes("Samantha") || v.name.includes("Female"));
+            }
+            if (selectedVoice) utterance.voice = selectedVoice;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function getGreeting() {
+            const h = new Date().getHours();
+            return h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
+        }
+
+        window.addEventListener('load', () => {
+            loadHistory();
+            if (document.getElementById("chatBox").children.length === 0) {
+                const sessionGreeted = sessionStorage.getItem('sessionGreeted');
+                if (!sessionGreeted) {
+                    const user = localStorage.getItem('user') || 'Friend';
+                    setTimeout(() => { 
+                        addMessage(`${getGreeting()} ${user}, I am Aether AI, your friendly Study Assistant. I am here to help you succeed! ✨`, "bot", false); 
+                        sessionStorage.setItem('sessionGreeted', 'true');
+                    }, 500);
+                }
+            }
+        });
+    </script>
+    <style>
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-in-up { animation: slideInUp 0.3s ease-out forwards; }
+    </style>
+</body>
+
+</html>
